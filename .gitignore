@@ -8,36 +8,17 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
 
-# =========================
-# Operating System Files
-# =========================
+# copied exes during testing
+*.exe
 
-# OSX
-# =========================
+# Build results
 
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
