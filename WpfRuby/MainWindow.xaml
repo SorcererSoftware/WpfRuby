@@ -1,5 +1,33 @@
-﻿<Window x:Class="WpfRuby.MainWindow"
+﻿<Window x:Class="SorcererSoftware.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:s="clr-namespace:SorcererSoftware"
+        AllowDrop="True"
         Title="WpfRuby" Height="350" Width="525">
+   <Window.InputBindings>
+      <KeyBinding Key="D" Modifiers="Control" Command="s:MainWindow.DebugCommand"/>
+   </Window.InputBindings>
+   <Window.CommandBindings>
+      <CommandBinding Command="s:MainWindow.DebugCommand" Executed="DebugExecute"/>
+   </Window.CommandBindings>
+   <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition/>
+         <ColumnDefinition Name="DebugColumn" Width="0*"/>
+      </Grid.ColumnDefinitions>
+      <Decorator Name="Body"/>
+      <DockPanel Grid.Column="1">
+         <TextBlock Text="Evaluate:" DockPanel.Dock="Top"/>
+         <TextBox Name="DebugExpression" Text="app.help" DockPanel.Dock="Top">
+            <TextBox.InputBindings>
+               <KeyBinding Key="Enter" Command="s:MainWindow.RunPromptCommand"/>
+            </TextBox.InputBindings>
+            <TextBox.CommandBindings>
+               <CommandBinding Command="s:MainWindow.RunPromptCommand" Executed="RunPromptExecute"/>
+            </TextBox.CommandBindings>
+         </TextBox>
+         <TextBlock Text="Results:" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+         <TextBox Name="DebugResults" IsReadOnly="True"/>
+      </DockPanel>
+   </Grid>
 </Window>
