@@ -41,8 +41,8 @@ include SorcererSoftware
          return _scope.Engine.Execute(script, _scope);
       }
 
-      public static object ExecuteFile(string file) {
-         return _scope.Engine.ExecuteFile(file, _scope);
+      public static void ExecuteFile(string file) {
+         _scope.Engine.ExecuteFile(file, _scope);
       }
    }
 }

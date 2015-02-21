@@ -63,8 +63,7 @@ namespace SorcererSoftware {
          if (_appResourceSource != null) RemoveWatch(_appResourceSource);
          _appResourceSource = xamlfile;
          Watch(xamlfile, file => {
-            var xaml = File.ReadAllText(file);
-            var dictionary = (ResourceDictionary)XamlReader.Parse(xaml);
+            var dictionary = (ResourceDictionary)LoadXaml(file);
             var appResources = Application.Current.Resources.MergedDictionaries;
             appResources.Clear();
             appResources.Add(dictionary);

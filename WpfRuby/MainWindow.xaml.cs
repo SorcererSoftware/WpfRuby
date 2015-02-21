@@ -22,7 +22,7 @@ namespace SorcererSoftware {
          _appHelper = new AppHelper(Body);
          Dlr.Scope.app = _appHelper;
          _appHelper.SendDebugText += (sender, e) => Print(e.Value);
-         _appHelper.Watch(_autoStart, LoadScript);
+         _appHelper.Watch(_autoStart, Dlr.ExecuteFile);
       }
 
       #region Events
@@ -33,7 +33,7 @@ namespace SorcererSoftware {
          var data = (string[])e.Data.GetData(DataFormats.FileDrop);
          _appHelper.RemoveWatch(_autoStart);
          _autoStart = data[0];
-         _appHelper.Watch(_autoStart, LoadScript);
+         _appHelper.Watch(_autoStart, Dlr.ExecuteFile);
       }
 
       #endregion
@@ -66,18 +66,6 @@ namespace SorcererSoftware {
       #endregion
 
       #region Helpers
-
-      void LoadScript(string file) {
-         try {
-            Dlr.ExecuteFile(file);
-         } catch (Exception ex) {
-            Print("Error:");
-            while (ex != null) {
-               Print(ex.Message);
-               ex = ex.InnerException;
-            }
-         }
-      }
 
       string ProcessObject(object input) {
          if (input is string) return (string)input;
