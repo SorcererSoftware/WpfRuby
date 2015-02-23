@@ -26,8 +26,8 @@
                <CommandBinding Command="s:MainWindow.RunPromptCommand" Executed="RunPromptExecute"/>
             </TextBox.CommandBindings>
          </TextBox>
-         <TextBlock Text="Results:" TextWrapping="Wrap" DockPanel.Dock="Top"/>
-         <TextBox Name="DebugResults" IsReadOnly="True"/>
+         <TextBlock Text="Results:" DockPanel.Dock="Top"/>
+         <TextBox Name="DebugResults" IsReadOnly="True" TextWrapping="Wrap"/>
       </DockPanel>
    </Grid>
 </Window>

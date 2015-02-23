@@ -16,7 +16,7 @@ require '" + typeof(DependencyObject).Assembly.FullName /* WindowsBase */ + @"'
 require '" + typeof(Enumerable).Assembly.FullName /* System.Core */ + @"'
 require '" + typeof(Application).Assembly.FullName /* PresentationFramework */ + @"'
 require '" + typeof(DataFormats).Assembly.FullName /* PresentationCore */ + @"'
-require 'WpfRuby'
+load_assembly 'WpfRuby' # if I use require, ValueConverters cannot access scoped variables and functions. This merits more research.
 include System
 include System::Collections::Generic
 include System::Linq
