@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Windows;
@@ -15,7 +16,10 @@ namespace SorcererSoftware {
       readonly Decorator _body;
       string _appResourceSource;
 
-      public UIElement WindowContent { set { _body.Child = value; } }
+      public UIElement WindowContent {
+         get { return _body.Child; }
+         set { _body.Child = value; }
+      }
 
       public AppHelper(Decorator body) {
          _body = body;
@@ -47,6 +51,23 @@ namespace SorcererSoftware {
       public void RemoveWatch(string file) {
          if (!_observeActions.ContainsKey(file)) return;
          _observeActions.Remove(file);
+      }
+
+      public void Handle(UIElement element, RoutedEvent re, RoutedEventHandler action) {
+         RoutedEventHandler wrapper = (o,e) => {
+            Try(() => {
+               action(o, e);
+            }, "Error running event handler for " + re.Name);
+         };
+         element.AddHandler(re, wrapper);
+      }
+
+      public void Handle(INotifyPropertyChanged element, Action<string> handler) {
+         element.PropertyChanged += (sender, e) => {
+            Try(() => {
+               handler(e.PropertyName);
+            }, "Error running event handler for " + e.PropertyName + " changed");
+         };
       }
 
       /// <summary>
@@ -108,19 +129,25 @@ UpdateApplicationResources 'file'
          var newline = Environment.NewLine;
          string debugText = "Observed change to " + file;
          _dispatcher.Invoke(() => {
-            try {
+            Try(() => {
                Thread.Sleep(500); // wait a moment for the previous user to release the lock
                _observeActions[file](file);
-            } catch (Exception ex) {
-               debugText += newline + "Error running attached action:";
-               while (ex != null) {
-                  debugText += newline + ex.Message;
-                  ex = ex.InnerException;
-               }
-            }
-
-            if (SendDebugText != null) SendDebugText(this, debugText + newline + newline);
+            }, "Error running action when " + file + " changed");
          });
+      }
+
+      void Try(Action a, string errorHeader) {
+         try {
+            a();
+         } catch (Exception ex) {
+            var newline = Environment.NewLine;
+            string debugText = errorHeader + ":";
+            while (ex != null) {
+               debugText += newline + ex.Message;
+               ex = ex.InnerException;
+            }
+            if (SendDebugText != null) SendDebugText(this, debugText + newline);
+         }
       }
 
       #endregion
