@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SorcererSoftware {
    public class ExpandoDependencyObject : DynamicObject, IDictionary<string, object>, INotifyCollectionChanged, INotifyPropertyChanged {
+      #region DynamicObject
+
       readonly IDictionary<string, object> _members = new Dictionary<string, object>();
-
-      public event PropertyChangedEventHandler PropertyChanged;
-      public event NotifyCollectionChangedEventHandler CollectionChanged;
-
       public override bool TrySetMember(SetMemberBinder binder, object value) {
-         this[binder.Name] = value;
+         if (binder.Name.EndsWith("Executed")) SetExecuted(Chop(binder.Name, "Executed"), value);
+         else if (binder.Name.EndsWith("CanExecute")) SetCanExecute(Chop(binder.Name, "CanExecute"), value);
+         else this[binder.Name] = value;
          return true;
       }
 
@@ -20,12 +23,75 @@ namespace SorcererSoftware {
          return result != null;
       }
 
+      static string Chop(string name, string token) {
+         return name.Substring(0, name.Length - token.Length);
+      }
+
+      #endregion
+
+      #region Execution Handlers
+
+      /// <summary>
+      /// Fill this dictionary with Actions sent in with signatures like "CommadNameExecuted", where each token ends with "Executed".
+      /// </summary>
+      readonly IDictionary<RoutedCommand, dynamic> _commandExecuteds = new Dictionary<RoutedCommand, dynamic>();
+
+      /// <summary>
+      /// Fill this dictionary with Actions sent in with signatures like "CommadNameCanExecute", where each token ends with "CanExecute".
+      /// </summary>
+      readonly IDictionary<RoutedCommand, dynamic> _commandCanExecutes = new Dictionary<RoutedCommand, dynamic>();
+
+      /// <summary>
+      /// Unwrap the sender and eventargs from the parameter.
+      /// </summary>
+      /// <param name="command"></param>
+      /// <param name="args"></param>
+      public void TryExecute(ExecutedRoutedEventArgs args) {
+         var command = (RoutedUICommand)args.Command;
+         if (!_commandExecuteds.ContainsKey(command)) return;
+         var action = _commandExecuteds[command];
+         try {
+            action(args.Source, (RoutedEventArgs)args.Parameter);
+            args.Handled = true;
+         } catch (Exception ex) {
+            // TODO
+         }
+      }
+
+      public void TryCanExecute(object sender, CanExecuteRoutedEventArgs args) {
+         var command = (RoutedUICommand)args.Command;
+         if (!_commandCanExecutes.ContainsKey(command)) return;
+         var action = _commandExecuteds[command];
+         try {
+            action(sender, args);
+         } catch (Exception ex) {
+            // TODO
+         }
+      }
+
+      void SetExecuted(string name, object value) {
+         _commandExecuteds[DynamicCommands.GetCommand(name)] = value;
+      }
+
+      void SetCanExecute(string name, object value) {
+         _commandCanExecutes[DynamicCommands.GetCommand(name)] = value;
+      }
+
+      #endregion
+
+      #region NotifyChanged Interfaces
+
+      public event PropertyChangedEventHandler PropertyChanged;
+      public event NotifyCollectionChangedEventHandler CollectionChanged;
+
       void Notify(string prop) {
          if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(prop));
       }
       void Notify(NotifyCollectionChangedAction action) {
          if (CollectionChanged != null) CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
       }
+
+      #endregion
 
       #region IDictionary
 

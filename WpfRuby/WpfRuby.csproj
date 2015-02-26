@@ -73,6 +73,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RoutedEventCommand.cs" />
     <Compile Include="ExpandoDependencyObject.cs" />
     <Compile Include="RubyBinding.cs" />
     <Compile Include="RubyControl.cs" />
