@@ -57,7 +57,6 @@ namespace SorcererSoftware {
       }
 
       #endregion
-
    }
 
    public static class DynamicCommands {

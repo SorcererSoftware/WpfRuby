@@ -61,22 +61,16 @@ namespace SorcererSoftware {
 
       public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
          Dlr.Scope.values = values;
-         try {
-            return Dlr.Execute(Expression);
-         } catch (Exception ex) {
-            // conversion failed
-            return null;
-         }
+         object returnValue = null;
+         ExceptionHandler.Try(() => returnValue = Dlr.Execute(Expression), "MultiValue Conversion Fail: " + Expression);
+         return returnValue;
       }
 
       public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
          Dlr.Scope.value = value;
-         try {
-            return (object[])Dlr.Execute(Expression);
-         } catch (Exception ex) {
-            // conversion failed
-            return null;
-         }
+         object[] returnValues = null;
+         ExceptionHandler.Try(() => returnValues = (object[])Dlr.Execute(Expression), "MultiValue BackConversion Fail: " + BackExpression);
+         return returnValues;
       }
 
       #endregion
@@ -85,12 +79,16 @@ namespace SorcererSoftware {
 
       public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
          Dlr.Scope.value = value;
-         return Dlr.Execute(Expression);
+         object returnValue = null;
+         ExceptionHandler.Try(() => returnValue = Dlr.Execute(Expression), "Value Conversion Fail: " + Expression);
+         return returnValue;
       }
 
       public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
          Dlr.Scope.value = value;
-         return Dlr.Execute(Expression);
+         object returnValue = null;
+         ExceptionHandler.Try(() => returnValue = Dlr.Execute(BackExpression), "Value BackConversion Fail: " + BackExpression);
+         return returnValue;
       }
 
       #endregion

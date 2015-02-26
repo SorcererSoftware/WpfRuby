@@ -24,6 +24,7 @@ namespace SorcererSoftware {
       public AppHelper(Decorator body) {
          _body = body;
          _dispatcher = body.Dispatcher;
+         ExceptionHandler.App = this;
          _watcher.Path = AppDomain.CurrentDomain.BaseDirectory;
          _watcher.IncludeSubdirectories = true;
          _watcher.Created += OnChanged;
@@ -31,8 +32,6 @@ namespace SorcererSoftware {
          _watcher.Renamed += OnChanged;
          _watcher.EnableRaisingEvents = true;
       }
-
-      public event EventHandler<ValueEventArgs<string>> SendDebugText;
 
       /// <summary>
       /// Given a file and an action, causes the action to be called any time the file changes.
@@ -55,7 +54,7 @@ namespace SorcererSoftware {
 
       public void Handle(UIElement element, RoutedEvent re, RoutedEventHandler action) {
          RoutedEventHandler wrapper = (o,e) => {
-            Try(() => {
+            ExceptionHandler.Try(() => {
                action(o, e);
             }, "Error running event handler for " + re.Name);
          };
@@ -64,7 +63,7 @@ namespace SorcererSoftware {
 
       public void Handle(INotifyPropertyChanged element, Action<string> handler) {
          element.PropertyChanged += (sender, e) => {
-            Try(() => {
+            ExceptionHandler.Try(() => {
                handler(e.PropertyName);
             }, "Error running event handler for " + e.PropertyName + " changed");
          };
@@ -129,14 +128,22 @@ UpdateApplicationResources 'file'
          var newline = Environment.NewLine;
          string debugText = "Observed change to " + file;
          _dispatcher.Invoke(() => {
-            Try(() => {
+            ExceptionHandler.Try(() => {
                Thread.Sleep(500); // wait a moment for the previous user to release the lock
                _observeActions[file](file);
             }, "Error running action when " + file + " changed");
          });
       }
 
-      void Try(Action a, string errorHeader) {
+      #endregion
+   }
+
+   public static class ExceptionHandler {
+      internal static AppHelper App;
+
+      public static event EventHandler<ValueEventArgs<string>> SendDebugText;
+
+      public static void Try(Action a, string errorHeader) {
          try {
             a();
          } catch (Exception ex) {
@@ -146,10 +153,8 @@ UpdateApplicationResources 'file'
                debugText += newline + ex.Message;
                ex = ex.InnerException;
             }
-            if (SendDebugText != null) SendDebugText(this, debugText + newline);
+            if (SendDebugText != null) SendDebugText(App, debugText + newline);
          }
       }
-
-      #endregion
    }
 }

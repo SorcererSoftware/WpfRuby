@@ -21,7 +21,7 @@ namespace SorcererSoftware {
          _autoStart = autoStart;
          _appHelper = new AppHelper(Body);
          Dlr.Scope.app = _appHelper;
-         _appHelper.SendDebugText += (sender, e) => Print(e.Value);
+         ExceptionHandler.SendDebugText += (sender, e) => Print(e.Value);
          _appHelper.Watch(_autoStart, Dlr.ExecuteFile);
       }
 

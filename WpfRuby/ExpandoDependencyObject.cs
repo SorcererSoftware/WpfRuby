@@ -50,23 +50,17 @@ namespace SorcererSoftware {
          var command = (RoutedUICommand)args.Command;
          if (!_commandExecuteds.ContainsKey(command)) return;
          var action = _commandExecuteds[command];
-         try {
+         ExceptionHandler.Try(() => {
             action(args.Source, (RoutedEventArgs)args.Parameter);
             args.Handled = true;
-         } catch (Exception ex) {
-            // TODO
-         }
+         }, "Error running " + command.Name + "Executed");
       }
 
       public void TryCanExecute(object sender, CanExecuteRoutedEventArgs args) {
-         var command = (RoutedUICommand)args.Command;
+         var command = (RoutedCommand)args.Command;
          if (!_commandCanExecutes.ContainsKey(command)) return;
          var action = _commandExecuteds[command];
-         try {
-            action(sender, args);
-         } catch (Exception ex) {
-            // TODO
-         }
+         ExceptionHandler.Try(() => action(sender, args), "Error running " + command.Name + "CanExecute");
       }
 
       void SetExecuted(string name, object value) {
