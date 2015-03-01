@@ -14,6 +14,7 @@ namespace SorcererSoftware {
       public override bool TrySetMember(SetMemberBinder binder, object value) {
          if (binder.Name.EndsWith("Executed")) SetExecuted(Chop(binder.Name, "Executed"), value);
          else if (binder.Name.EndsWith("CanExecute")) SetCanExecute(Chop(binder.Name, "CanExecute"), value);
+         else if (binder.Name.EndsWith("Changed")) SetChangeHandler(Chop(binder.Name, "Changed"), value);
          else this[binder.Name] = value;
          return true;
       }
@@ -73,6 +74,22 @@ namespace SorcererSoftware {
 
       #endregion
 
+      #region ChangeHandlers
+
+      readonly IDictionary<string, dynamic> _changeHandlers = new Dictionary<string, dynamic>();
+
+      public void TryHandleChange(string name) {
+         if (!_changeHandlers.ContainsKey(name)) return;
+         var action = _changeHandlers[name];
+         ExceptionHandler.Try(() => action(), "Error running change handler " + name + "Changed");
+      }
+
+      void SetChangeHandler(string name, object value) {
+         _changeHandlers[name] = value;
+      }
+
+      #endregion
+
       #region NotifyChanged Interfaces
 
       public event PropertyChangedEventHandler PropertyChanged;
@@ -80,6 +97,7 @@ namespace SorcererSoftware {
 
       void Notify(string prop) {
          if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(prop));
+         TryHandleChange(prop);
       }
       void Notify(NotifyCollectionChangedAction action) {
          if (CollectionChanged != null) CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));

@@ -18,7 +18,6 @@ namespace SorcererSoftware {
    }
 
    public class Events {
-
       #region Attached Property: RoutedEventCommands
 
       public static readonly DependencyProperty RoutedEventCommandsProperty = DependencyProperty.RegisterAttached("RoutedEventCommandsInternal", typeof(RoutedEventCommandCollection), typeof(UIElement), new PropertyMetadata(null));
