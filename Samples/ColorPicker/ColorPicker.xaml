@@ -1,0 +1,117 @@
+<DockPanel
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:s="clr-namespace:SorcererSoftware;assembly=WpfRuby">
+   <Slider Name="HueSlider" Orientation="Vertical" DockPanel.Dock="Right" Value="{Binding Hue}" Maximum="1"/>
+   <DockPanel DockPanel.Dock="Bottom">
+      <Rectangle Width="100">
+         <Rectangle.Fill>
+            <SolidColorBrush x:Name="ColorBrush">
+               <SolidColorBrush.Color>
+                  <s:RubyMultiBinding Expression="Color.FromRgb values[0], values[1], values[2]" Mode="OneWay">
+                     <Binding Path="Red"/>
+                     <Binding Path="Green"/>
+                     <Binding Path="Blue"/>
+                  </s:RubyMultiBinding>
+               </SolidColorBrush.Color>
+            </SolidColorBrush>
+         </Rectangle.Fill>
+      </Rectangle>
+      <StackPanel>
+         <StackPanel.Resources>
+            <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+               <Setter Property="Maximum" Value="255"/>
+            </Style>
+         </StackPanel.Resources>
+         <Slider Name="RedSlider" Value="{Binding Red}">
+            <Slider.Background>
+               <LinearGradientBrush EndPoint="1,0">
+                  <GradientStop>
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb 0, value.G, value.B"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+                  <GradientStop Offset="1">
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb 255, value.G, value.B"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+               </LinearGradientBrush>
+            </Slider.Background>
+         </Slider>
+         <Slider Name="GreenSlider" Value="{Binding Green}">
+            <Slider.Background>
+               <LinearGradientBrush EndPoint="1,0">
+                  <GradientStop>
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb value.R, 0, value.B"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+                  <GradientStop Offset="1">
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb value.R, 255, value.B"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+               </LinearGradientBrush>
+            </Slider.Background>
+         </Slider>
+         <Slider Name="BlueSlider" Value="{Binding Blue}">
+            <Slider.Background>
+               <LinearGradientBrush EndPoint="1,0">
+                  <GradientStop>
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb value.R, value.G, 0"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+                  <GradientStop Offset="1">
+                     <GradientStop.Color>
+                        <s:RubyBinding ElementName="ColorBrush" Path="Color" Expression="Color.FromRgb value.R, value.G, 255"/>
+                     </GradientStop.Color>
+                  </GradientStop>
+               </LinearGradientBrush>
+            </Slider.Background>
+         </Slider>
+         <TextBox IsReadOnly="True" Text="{Binding Mode=OneWay, ElementName=ColorBrush}"/>
+      </StackPanel>
+   </DockPanel>
+   <Grid Name="SBPicker">
+      <s:Events.RoutedEventCommands>
+         <s:RoutedEventCommand Event="MouseDown" Command="{s:Command SelectSaturationBrightness}"/>
+      </s:Events.RoutedEventCommands>
+      <Grid.Background>
+         <SolidColorBrush>
+            <SolidColorBrush.Color>
+               <s:RubyBinding Path="Hue" Expression="c = FromHSB value, 1, 1; Color.FromRgb c[0], c[1], c[2]"/>
+            </SolidColorBrush.Color>
+         </SolidColorBrush>
+      </Grid.Background>
+      <Rectangle>
+         <Rectangle.Fill>
+            <LinearGradientBrush EndPoint="1,0">
+               <GradientStop Color="#FFFF"/>
+               <GradientStop Color="#0FFF" Offset="1"/>
+            </LinearGradientBrush>
+         </Rectangle.Fill>
+      </Rectangle>
+      <Rectangle>
+         <Rectangle.Fill>
+            <LinearGradientBrush EndPoint="0,1">
+               <GradientStop Color="#0000"/>
+               <GradientStop Color="#F000" Offset="1"/>
+            </LinearGradientBrush>
+         </Rectangle.Fill>
+      </Rectangle>
+      <Ellipse Width="25" Height="25" Name="SBIndicator" StrokeThickness="1" Fill="{Binding ColorBrush}">
+         <Ellipse.Stroke>
+            <SolidColorBrush>
+               <SolidColorBrush.Color>
+                  <s:RubyBinding Path="Hue" Expression="c = FromHSB value + 0.5, 1, 1; Color.FromRgb c[0], c[1], c[2]"/>
+               </SolidColorBrush.Color>
+            </SolidColorBrush>
+         </Ellipse.Stroke>
+         <Ellipse.RenderTransform>
+            <TranslateTransform X="{Binding SaturationPosition}" Y="{Binding BrightnessPosition}"/>
+         </Ellipse.RenderTransform>
+      </Ellipse>
+   </Grid>
+</DockPanel>

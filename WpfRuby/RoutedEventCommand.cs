@@ -31,6 +31,21 @@ namespace SorcererSoftware {
          return collection;
       }
 
+      public static void RouteCommandExecutedToDataContext(object sender, ExecutedRoutedEventArgs args) {
+         var element = sender as FrameworkElement;
+         if (element == null) return;
+         var context = element.DataContext as ExpandoDependencyObject;
+         if (context == null) return;
+         context.TryExecute(args);
+      }
+      public static void RouteCommandCanExecuteToDataContext(object sender, CanExecuteRoutedEventArgs args) {
+         var element = sender as FrameworkElement;
+         if (element == null) return;
+         var context = element.DataContext as ExpandoDependencyObject;
+         if (context == null) return;
+         context.TryCanExecute(sender, args);
+      }
+
       static void RoutedEventCommandsChanged(object sender, NotifyCollectionChangedEventArgs e) {
          RoutedEventCommandCollection collection = (RoutedEventCommandCollection)sender;
          if (e.Action != NotifyCollectionChangedAction.Add) throw new Exception("RoutedEventCommands do not currently support having elements removed, changed, or moved.");
@@ -38,20 +53,7 @@ namespace SorcererSoftware {
             var command = eventCommand.Command;
             RoutedEventHandler handler = (obj, args) => command.Execute(args, collection.Element);
             collection.Element.AddHandler(eventCommand.Event, handler);
-            collection.Element.CommandBindings.Add(new CommandBinding(command, (obj, args) => {
-               // Execute Event Handler
-               var frameworkElement = collection.Element as FrameworkElement;
-               if (frameworkElement == null) return;
-               var context = frameworkElement.DataContext as ExpandoDependencyObject;
-               if (context != null) context.TryExecute(args);
-            }, (obj, args) => {
-               // Can Execute Event Handler
-               args.CanExecute = true;
-               var frameworkElement = collection.Element as FrameworkElement;
-               if (frameworkElement == null) return;
-               var context = frameworkElement.DataContext as ExpandoDependencyObject;
-               if (context != null) context.TryCanExecute(obj, args);
-            }));
+            collection.Element.CommandBindings.Add(new CommandBinding(command, RouteCommandExecutedToDataContext, RouteCommandCanExecuteToDataContext));
          }
       }
 
@@ -70,5 +72,12 @@ namespace SorcererSoftware {
       public string Name { get; set; }
       public CommandExtension(string name) { Name = name; }
       public override object ProvideValue(IServiceProvider serviceProvider) { return DynamicCommands.GetCommand(Name); }
+   }
+
+   public class DataContextCommandBindingExtension : MarkupExtension {
+      public string Command { get; set; }
+      public override object ProvideValue(IServiceProvider serviceProvider) {
+         return new CommandBinding(DynamicCommands.GetCommand(Command), Events.RouteCommandExecutedToDataContext, Events.RouteCommandCanExecuteToDataContext);
+      }
    }
 }

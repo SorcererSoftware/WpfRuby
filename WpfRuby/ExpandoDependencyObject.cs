@@ -59,7 +59,10 @@ namespace SorcererSoftware {
 
       public void TryCanExecute(object sender, CanExecuteRoutedEventArgs args) {
          var command = (RoutedCommand)args.Command;
-         if (!_commandCanExecutes.ContainsKey(command)) return;
+         if (!_commandCanExecutes.ContainsKey(command)) {
+            args.CanExecute = true;
+            return;
+         }
          var action = _commandExecuteds[command];
          ExceptionHandler.Try(() => action(sender, args), "Error running " + command.Name + "CanExecute");
       }

@@ -16,6 +16,9 @@ namespace SorcererSoftware {
       readonly Decorator _body;
       string _appResourceSource;
 
+      public event EventHandler<ValueEventArgs<string>> SendOutputText;
+      public event EventHandler RequestClear;
+
       public UIElement WindowContent {
          get { return _body.Child; }
          set { _body.Child = value; }
@@ -61,12 +64,12 @@ namespace SorcererSoftware {
          element.AddHandler(re, wrapper);
       }
 
-      public void Handle(INotifyPropertyChanged element, Action<string> handler) {
-         element.PropertyChanged += (sender, e) => {
-            ExceptionHandler.Try(() => {
-               handler(e.PropertyName);
-            }, "Error running event handler for " + e.PropertyName + " changed");
-         };
+      public void Print(string str) {
+         if (SendOutputText != null) SendOutputText(this, str);
+      }
+
+      public void Clear() {
+         if (RequestClear != null) RequestClear(this, EventArgs.Empty);
       }
 
       /// <summary>
@@ -116,6 +119,13 @@ RemoveWatch 'file'
 UpdateApplicationResources 'file'
   Loads a ResourceDictionary from xaml and stores it in the application resources.
   Useful for adding adding styles or other resources to reference in other xaml.
+
+Print 'output'
+  Prints some text to the debug output.
+
+Clear()
+  Clears the debug output.
+
 ";
       }
 
