@@ -5,43 +5,45 @@
    HorizontalAlignment="Left"
    VerticalAlignment="Top"
    >
+   <Grid.CommandBindings>
+      <s:DataContextCommandBinding Command="{s:Command UpdateRender}"/>
+      <s:DataContextCommandBinding Command="{s:Command MouseDown}"/>
+      <s:DataContextCommandBinding Command="{s:Command MouseMove}"/>
+      <s:DataContextCommandBinding Command="{s:Command MouseUp}"/>
+   </Grid.CommandBindings>
    <s:Events.RoutedEventCommands>
-   	<s:RoutedEventCommand Event="MouseMove" Command="{s:Command UpdateRender}"/>
+      <s:RoutedEventCommand Event="MouseMove" Command="{s:Command UpdateRender}"/>
    </s:Events.RoutedEventCommands>
    <Grid.Resources>
-   	<Style TargetType="Rectangle">
-   		<Setter Property="StrokeThickness" Value="3"/>
-   		<Setter Property="Height" Value="200"/>
-   		<Setter Property="Width" Value="200"/>
-   		<Setter Property="RenderTransformOrigin" Value=".5,.5"/>
-   	</Style>
+      <s:RoutedEventCommandCollection x:Key="MovementCommands">
+         <s:RoutedEventCommand Event="MouseDown" Command="{s:Command MouseDown}"/>
+         <s:RoutedEventCommand Event="MouseMove" Command="{s:Command MouseMove}"/>
+         <s:RoutedEventCommand Event="MouseUp" Command="{s:Command MouseUp}"/>
+      </s:RoutedEventCommandCollection>
+      <Style TargetType="Rectangle">
+         <Setter Property="StrokeThickness" Value="3"/>
+         <Setter Property="Height" Value="200"/>
+         <Setter Property="Width" Value="200"/>
+         <Setter Property="RenderTransformOrigin" Value=".5,.5"/>
+         <Setter Property="Stroke" Value="{Binding Name, RelativeSource={RelativeSource Self}}"/>
+      </Style>
    </Grid.Resources>
-   <Rectangle Stroke="Red" Name="Red">
-   	<Rectangle.RenderTransform>
-   		<TransformGroup>
+   <Rectangle Name="Red" s:Events.RoutedEventCommands="{StaticResource MovementCommands}">
+      <Rectangle.RenderTransform>
+         <TransformGroup>
             <ScaleTransform/>
-   			<RotateTransform/>
+            <RotateTransform/>
             <TranslateTransform X="-130" Y="0"/>
-			</TransformGroup>
-   	</Rectangle.RenderTransform>
-   	<s:Events.RoutedEventCommands>
-   		<s:RoutedEventCommand Event="MouseDown" Command="{s:Command MouseDown}"/>
-	   	<s:RoutedEventCommand Event="MouseMove" Command="{s:Command MouseMove}"/>
-	   	<s:RoutedEventCommand Event="MouseUp" Command="{s:Command MouseUp}"/>
-   	</s:Events.RoutedEventCommands>
+         </TransformGroup>
+      </Rectangle.RenderTransform>
    </Rectangle>
-   <Rectangle Stroke="Blue" Name="Blue">
-   	<Rectangle.RenderTransform>
-   		<TransformGroup>
+   <Rectangle Name="Blue" s:Events.RoutedEventCommands="{StaticResource MovementCommands}">
+      <Rectangle.RenderTransform>
+         <TransformGroup>
             <ScaleTransform/>
-   			<RotateTransform/>
+            <RotateTransform/>
             <TranslateTransform X="130" Y="0"/>
-			</TransformGroup>
-   	</Rectangle.RenderTransform>
-   	<s:Events.RoutedEventCommands>
-   		<s:RoutedEventCommand Event="MouseDown" Command="{s:Command MouseDown}"/>
-	   	<s:RoutedEventCommand Event="MouseMove" Command="{s:Command MouseMove}"/>
-	   	<s:RoutedEventCommand Event="MouseUp" Command="{s:Command MouseUp}"/>
-   	</s:Events.RoutedEventCommands>
+         </TransformGroup>
+      </Rectangle.RenderTransform>
    </Rectangle>
 </Grid>
