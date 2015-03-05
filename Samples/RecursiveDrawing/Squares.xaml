@@ -4,31 +4,20 @@
    xmlns:s="clr-namespace:SorcererSoftware;assembly=WpfRuby"
    HorizontalAlignment="Left"
    VerticalAlignment="Top"
+   MouseMove="{s:DataContextHandler UpdateRenderExecuted}"
    >
-   <Grid.CommandBindings>
-      <s:DataContextCommandBinding Command="{s:Command UpdateRender}"/>
-      <s:DataContextCommandBinding Command="{s:Command MouseDown}"/>
-      <s:DataContextCommandBinding Command="{s:Command MouseMove}"/>
-      <s:DataContextCommandBinding Command="{s:Command MouseUp}"/>
-   </Grid.CommandBindings>
-   <s:Events.RoutedEventCommands>
-      <s:RoutedEventCommand Event="MouseMove" Command="{s:Command UpdateRender}"/>
-   </s:Events.RoutedEventCommands>
    <Grid.Resources>
-      <s:RoutedEventCommandCollection x:Key="MovementCommands">
-         <s:RoutedEventCommand Event="MouseDown" Command="{s:Command MouseDown}"/>
-         <s:RoutedEventCommand Event="MouseMove" Command="{s:Command MouseMove}"/>
-         <s:RoutedEventCommand Event="MouseUp" Command="{s:Command MouseUp}"/>
-      </s:RoutedEventCommandCollection>
       <Style TargetType="Rectangle">
          <Setter Property="StrokeThickness" Value="3"/>
          <Setter Property="Height" Value="200"/>
          <Setter Property="Width" Value="200"/>
          <Setter Property="RenderTransformOrigin" Value=".5,.5"/>
-         <Setter Property="Stroke" Value="{Binding Name, RelativeSource={RelativeSource Self}}"/>
       </Style>
    </Grid.Resources>
-   <Rectangle Name="Red" s:Events.RoutedEventCommands="{StaticResource MovementCommands}">
+   <Rectangle Name="Red" Stroke="Red"
+      MouseDown="{s:DataContextHandler MouseDownExecuted}"
+      MouseMove="{s:DataContextHandler MouseMoveExecuted}"
+      MouseUp="{s:DataContextHandler MouseUpExecuted}">
       <Rectangle.RenderTransform>
          <TransformGroup>
             <ScaleTransform/>
@@ -37,7 +26,10 @@
          </TransformGroup>
       </Rectangle.RenderTransform>
    </Rectangle>
-   <Rectangle Name="Blue" s:Events.RoutedEventCommands="{StaticResource MovementCommands}">
+   <Rectangle Name="Blue" Stroke="Blue"
+      MouseDown="{s:DataContextHandler MouseDownExecuted}"
+      MouseMove="{s:DataContextHandler MouseMoveExecuted}"
+      MouseUp="{s:DataContextHandler MouseUpExecuted}">
       <Rectangle.RenderTransform>
          <TransformGroup>
             <ScaleTransform/>

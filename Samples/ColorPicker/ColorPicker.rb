@@ -69,6 +69,12 @@ end
 
 # given an empty context and a ColorPicker control, this adds the required methods and members
 def FillColorPickerContext(control, context)
+   context.Red = 0
+   context.Green = 0
+   context.Blue = 0
+   context.Hue = 0
+   context.Saturation = 0
+   context.Brightness = 0
 
    # when Saturation/Brightness change, update RGB
    # "Executed" methods are available to Commands of the same name.
@@ -80,6 +86,13 @@ def FillColorPickerContext(control, context)
       context.Red = color[0]
       context.Green = color[1]
       context.Blue = color[2]  
+   }
+
+   context.SaturationBrightnessSizeChanged = ->(obj,e) {
+      x = (context.Saturation - 0.5) * control.SBPicker.ActualWidth
+      control.SBIndicator.RenderTransform.X = x
+      y = (0.5 - context.Brightness) * control.SBPicker.ActualHeight
+      control.SBIndicator.RenderTransform.Y = y
    }
 
    # the "ignoreUpdates" flag keeps us from trying to do one update during another update

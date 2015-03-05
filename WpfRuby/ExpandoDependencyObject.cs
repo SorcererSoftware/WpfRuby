@@ -15,7 +15,7 @@ namespace SorcererSoftware {
          if (binder.Name.EndsWith("Executed")) SetExecuted(Chop(binder.Name, "Executed"), value);
          else if (binder.Name.EndsWith("CanExecute")) SetCanExecute(Chop(binder.Name, "CanExecute"), value);
          else if (binder.Name.EndsWith("Changed")) SetChangeHandler(Chop(binder.Name, "Changed"), value);
-         else this[binder.Name] = value;
+         this[binder.Name] = value;
          return true;
       }
 

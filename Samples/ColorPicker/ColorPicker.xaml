@@ -78,15 +78,7 @@
          <TextBox IsReadOnly="True" Text="{Binding Mode=OneWay, ElementName=ColorBrush}"/>
       </StackPanel>
    </DockPanel>
-   <Grid Name="SBPicker">
-      <Grid.CommandBindings>
-         <!-- DataContextCommandBindings route the commands to the controls DataContext, looking for methods name "Executed" and "CanExecute" -->
-         <s:DataContextCommandBinding Command="{s:Command SelectSaturationBrightness}"/>
-      </Grid.CommandBindings>
-      <s:Events.RoutedEventCommands>
-         <!-- RoutedEVentCommands turn events into commands. -->
-         <s:RoutedEventCommand Event="MouseDown" Command="{s:Command SelectSaturationBrightness}"/>
-      </s:Events.RoutedEventCommands>
+   <Grid Name="SBPicker" SizeChanged="{s:DataContextHandler SaturationBrightnessSizeChanged}" MouseDown="{s:DataContextHandler SelectSaturationBrightnessExecuted}">
       <Grid.Background>
          <SolidColorBrush>
             <SolidColorBrush.Color>
