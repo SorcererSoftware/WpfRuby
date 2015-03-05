@@ -1,4 +1,4 @@
-
+# -- utility functions - transfering between HSB and RGB
 def FromHSB(hue, sat, bright)
    hue -= hue.floor
    r,g,b = 0,0,0
@@ -58,6 +58,7 @@ def ToHSB(color)
    # [r,g,b]
 end
 
+# this updates the context's HSB after an RGB change
 def UpdateHSB(context, rgb)
    color = Color.FromRgb rgb[0], rgb[1], rgb[2]
    hsb = ToHSB color
@@ -66,16 +67,11 @@ def UpdateHSB(context, rgb)
    context.Brightness = hsb[2]
 end
 
+# given an empty context and a ColorPicker control, this adds the required methods and members
 def FillColorPickerContext(control, context)
-   context.Red = 0
-   context.Green = 0
-   context.Blue = 0
-   context.Hue = 0
-   context.Saturation = 0
-   context.Brightness = 0
-   context.SaturationPosition = 0
-   context.BrightnessPosition = 0
 
+   # when Saturation/Brightness change, update RGB
+   # "Executed" methods are available to Commands of the same name.
    context.SelectSaturationBrightnessExecuted = ->(obj, e) {
       p = e.GetPosition obj
       sat = p.X / obj.ActualWidth
@@ -86,7 +82,10 @@ def FillColorPickerContext(control, context)
       context.Blue = color[2]  
    }
 
+   # the "ignoreUpdates" flag keeps us from trying to do one update during another update
    ignoreUpdates = false
+
+   # when RGB changes, update HSB
    updateHsbFromRgb = ->() {
       return if ignoreUpdates
       ignoreUpdates = true
@@ -97,6 +96,8 @@ def FillColorPickerContext(control, context)
    context.RedChanged = updateHsbFromRgb
    context.GreenChanged = updateHsbFromRgb
    context.BlueChanged = updateHsbFromRgb
+
+   # when Hue changes, update RGB
    context.HueChanged = ->() {
       return if ignoreUpdates
       ignoreUpdates = true
@@ -106,6 +107,9 @@ def FillColorPickerContext(control, context)
       context.Blue = color[2]
       ignoreUpdates = false
    }
+
+   # the only way Saturation and Brightness can change is SelectSaturationBrightnessExecuted
+   # so these methods just have to update the control
    context.SaturationChanged = ->() {
       x = (context.Saturation - 0.5) * control.SBPicker.ActualWidth
       control.SBIndicator.RenderTransform.X = x
@@ -114,4 +118,9 @@ def FillColorPickerContext(control, context)
       y = (0.5 - context.Brightness) * control.SBPicker.ActualHeight
       control.SBIndicator.RenderTransform.Y = y
    }
+
+   # default color
+   context.Saturation = 0.9
+   context.Brightness = 0.75
+   context.Hue = 0.6
 end

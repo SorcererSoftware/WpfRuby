@@ -23,6 +23,10 @@
                <Setter Property="Maximum" Value="255"/>
             </Style>
          </StackPanel.Resources>
+         <!-- Give the slider's background colors based on the range of color that slider provides. -->
+         <!-- The best way to do this is by converting from RGB to a color, using 0 and 255 for the bounds. -->
+         <!-- But that's a total of 6 converters! That's a lot of ValueConverters, each which would only be used once. -->
+         <!-- Instead, we'll just add a little Ruby here in the Xaml using a RubyBinding to do the Value Conversion for us. -->
          <Slider Name="RedSlider" Value="{Binding Red}">
             <Slider.Background>
                <LinearGradientBrush EndPoint="1,0">
@@ -75,7 +79,12 @@
       </StackPanel>
    </DockPanel>
    <Grid Name="SBPicker">
+      <Grid.CommandBindings>
+         <!-- DataContextCommandBindings route the commands to the controls DataContext, looking for methods name "Executed" and "CanExecute" -->
+         <s:DataContextCommandBinding Command="{s:Command SelectSaturationBrightness}"/>
+      </Grid.CommandBindings>
       <s:Events.RoutedEventCommands>
+         <!-- RoutedEVentCommands turn events into commands. -->
          <s:RoutedEventCommand Event="MouseDown" Command="{s:Command SelectSaturationBrightness}"/>
       </s:Events.RoutedEventCommands>
       <Grid.Background>
@@ -110,7 +119,7 @@
             </SolidColorBrush>
          </Ellipse.Stroke>
          <Ellipse.RenderTransform>
-            <TranslateTransform X="{Binding SaturationPosition}" Y="{Binding BrightnessPosition}"/>
+            <TranslateTransform/>
          </Ellipse.RenderTransform>
       </Ellipse>
    </Grid>

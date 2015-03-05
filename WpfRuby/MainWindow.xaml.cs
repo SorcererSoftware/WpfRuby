@@ -21,7 +21,9 @@ namespace SorcererSoftware {
          _autoStart = autoStart;
          _appHelper = new AppHelper(Body);
          Dlr.Scope.app = _appHelper;
-         ExceptionHandler.SendDebugText += (sender, e) => Print(e.Value);
+         _appHelper.SendOutputText += (sender, e) => Print(e.Value);
+         _appHelper.RequestClear += (sender, e) => DebugResults.Clear();
+         ExceptionHandler.App = _appHelper;
          _appHelper.Watch(_autoStart, Dlr.ExecuteFile);
       }
 
@@ -52,8 +54,10 @@ namespace SorcererSoftware {
       void RunPromptExecute(object sender, EventArgs e) {
          try {
             var result = Dlr.Execute(DebugExpression.Text);
-            string output = ProcessObject(result);
-            Print(output);
+            if (result != null) {
+               string output = ProcessObject(result);
+               Print(output);
+            }
          } catch (Exception ex) {
             Print("Error:");
             while (ex != null) {

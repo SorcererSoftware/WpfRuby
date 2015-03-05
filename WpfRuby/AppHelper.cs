@@ -64,8 +64,9 @@ namespace SorcererSoftware {
          element.AddHandler(re, wrapper);
       }
 
-      public void Print(string str) {
+      public object Print(string str) {
          if (SendOutputText != null) SendOutputText(this, str);
+         return null;
       }
 
       public void Clear() {
@@ -151,8 +152,6 @@ Clear()
    public static class ExceptionHandler {
       internal static AppHelper App;
 
-      public static event EventHandler<ValueEventArgs<string>> SendDebugText;
-
       public static void Try(Action a, string errorHeader) {
          try {
             a();
@@ -163,7 +162,7 @@ Clear()
                debugText += newline + ex.Message;
                ex = ex.InnerException;
             }
-            if (SendDebugText != null) SendDebugText(App, debugText + newline);
+            App.Print(debugText + newline);
          }
       }
    }
