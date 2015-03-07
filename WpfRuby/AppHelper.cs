@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using System.Reflection;
 
 namespace SorcererSoftware {
    public class AppHelper {
@@ -94,6 +96,83 @@ namespace SorcererSoftware {
          });
       }
 
+      #region Lookups
+
+      public string LookupStatics(string classname) {
+         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => type.Name == classname);
+         string output = "";
+         string line = Environment.NewLine;
+         foreach (var type in types) {
+            output += type.FullName + ":" + line;
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Static).OrderBy(m => m.Name)) {
+               if (method.Name[0] != method.Name.ToUpper()[0]) continue;
+               output += "  " + method.Name + line;
+               foreach (var parameter in method.GetParameters()) output += "    " + parameter.ParameterType + line;
+            }
+            output += line;
+         }
+         return output;
+      }
+
+      public string FindTypes(string partialnames) {
+         string output = "";
+         string line = Environment.NewLine;
+         var types = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type =>
+               partialnames.ToLower().Split(' ').All(type.FullName.ToLower().Contains));
+         foreach (var type in types) {
+            output += type.FullName + line;
+         }
+         return output;
+      }
+
+      public string LookupProperties(string classname) {
+         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => type.Name == classname);
+         string output = "";
+         string line = Environment.NewLine;
+         foreach (var type in types) {
+            output += type.FullName + ":" + line;
+            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(p => p.Name)) {
+               if (property.Name[0] != property.Name.ToUpper()[0]) continue;
+               output += "  " + property.Name + line;
+            }
+            output += line;
+         }
+         return output;
+      }
+
+      public string LookupEnum(string classname) {
+         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => type.Name == classname);
+         string output = "";
+         string line = Environment.NewLine;
+         foreach (var type in types) {
+            if (!type.IsEnum) continue;
+            output += type.FullName + ":" + line;
+            foreach (var member in type.GetEnumNames()) output += "  " + member + line;
+            output += line;
+         }
+         return output;
+      }
+
+      public string LookupMethods(string classname) {
+         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => type.Name == classname);
+         string output = "";
+         string line = Environment.NewLine;
+         foreach (var type in types) {
+            output += type.FullName + ":" + line;
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance).OrderBy(m => m.Name)) {
+               if (method.Name[0] != method.Name.ToUpper()[0]) continue;
+               output += "  " + method.Name + line;
+               foreach (var parameter in method.GetParameters()) output += "    " + parameter.ParameterType + line;
+            }
+            output += line;
+         }
+         return output;
+      }
+
+      #endregion
+
       /// <summary>
       /// Provides a list of all Ruby helper functions in the AppHelper, along with their usage.
       /// Note that this is not a list of all public methods - it's just a list of members meant for use from Ruby.
@@ -127,6 +206,23 @@ Print 'output'
 Clear()
   Clears the debug output.
 
+FindTypes 'partial type names'
+  Given a space-separated list of strings, looks for all classnames that match each of those pieces.
+  example:
+    app.FindTypes 'open dialog'
+
+LookupStatics 'classname'
+  Lists all public static methods of a type.
+
+LookupMethods 'classname'
+  Lists all public methods of a type.
+
+LookupProperties 'classname'
+  Lists all public properties of a type.
+
+LookupEnum 'enumname'
+  Lists all the members of the given enumeration type.
+  example: app.LookupEnum 'Dock'
 ";
       }
 

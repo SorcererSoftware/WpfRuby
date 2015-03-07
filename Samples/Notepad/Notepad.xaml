@@ -1,0 +1,32 @@
+<DockPanel Background="Transparent"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:s="clr-namespace:SorcererSoftware;assembly=WpfRuby"
+   >
+   <DockPanel.InputBindings>
+      <KeyBinding Gesture="CTRL+N" Command="{s:Command New}"/>
+      <KeyBinding Gesture="CTRL+O" Command="{s:Command Open}"/>
+      <KeyBinding Gesture="CTRL+S" Command="{s:Command Save}"/>
+   </DockPanel.InputBindings>
+   <DockPanel.CommandBindings>
+      <s:DataContextCommandBinding Command="{s:Command New}"/>
+      <s:DataContextCommandBinding Command="{s:Command Open}"/>
+      <s:DataContextCommandBinding Command="{s:Command Save}"/>
+      <s:DataContextCommandBinding Command="{s:Command Close}"/>
+      <s:DataContextCommandBinding Command="{s:Command About}"/>
+   </DockPanel.CommandBindings>
+   <Menu DockPanel.Dock="Top">
+      <MenuItem Header="File">
+         <MenuItem Header="_New" Command="{s:Command New}"/>
+         <MenuItem Header="_Open" Command="{s:Command Open}"/>
+         <MenuItem Header="_Save" Command="{s:Command Save}"/>
+         <Separator/>
+         <MenuItem Header="Close" Command="{s:Command Close}"/>
+      </MenuItem>
+      <MenuItem Header="Help">
+         <MenuItem Header="About" Command="{s:Command About}"/>
+      </MenuItem>
+   </Menu>
+   <TextBox Name="Box" FontFamily="Courier New" Text="{Binding Text}"
+      AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"/>
+</DockPanel>

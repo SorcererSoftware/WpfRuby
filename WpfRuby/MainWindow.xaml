@@ -27,7 +27,7 @@
             </TextBox.CommandBindings>
          </TextBox>
          <TextBlock Text="Results:" DockPanel.Dock="Top"/>
-         <TextBox Name="DebugResults" IsReadOnly="True" TextWrapping="Wrap"/>
+         <TextBox Name="DebugResults" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible"/>
       </DockPanel>
    </Grid>
 </Window>
