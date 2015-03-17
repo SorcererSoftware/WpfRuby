@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Threading;
 using System.Reflection;
+using System.Xml;
 
 namespace SorcererSoftware {
    public class AppHelper {
@@ -83,6 +84,21 @@ namespace SorcererSoftware {
          var content = File.ReadAllText(file);
          var parsed = XamlReader.Parse(content);
          return parsed;
+      }
+
+      public string SaveXaml(object xaml) {
+         StringWriter stringWriter = new StringWriter();
+         XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter);
+         xmlTextWriter.Formatting = Formatting.Indented;
+         XamlWriter.Save(xaml, xmlTextWriter);
+         return stringWriter.ToString();
+      }
+
+      public string GetDefaultStyle(FrameworkElement element) {
+         if (element == null) return null;
+         var style = (Style)Application.Current.TryFindResource(element.GetType());
+         if (style == null) return null;
+         return SaveXaml(style);
       }
 
       public void UpdateApplicationResources(string xamlfile) {
