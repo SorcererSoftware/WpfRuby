@@ -1,0 +1,32 @@
+<Grid
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:s="clr-namespace:SorcererSoftware;assembly=WpfRuby">
+   <ItemsControl x:Name="VisualGraphSet" Background="Green" ItemsSource="{Binding GraphSet}">
+      <ItemsControl.ItemsPanel>
+         <ItemsPanelTemplate>
+            <StackPanel/>
+         </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+         <DataTemplate>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+               <TextBox Margin="10" Width="100" Text="{Binding Formula}"/>
+               <Slider Orientation="Vertical" Minimum="-10" Maximum="10" Value="{Binding Start}"/>
+               <ItemsControl Background="Red" ItemsSource="{Binding Data}" Padding="0">
+                  <ItemsControl.ItemsPanel>
+                     <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                     </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                     <DataTemplate>
+                        <Line Width="1" VerticalAlignment="Bottom" Margin="0" Stroke="Black" Y2="1" Stretch="Fill" Height="{s:RubyBinding Expression=value+20}"/>
+                     </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+               </ItemsControl>
+            </StackPanel>
+         </DataTemplate>
+      </ItemsControl.ItemTemplate>
+   </ItemsControl>
+</Grid>
